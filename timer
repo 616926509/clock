@@ -1,0 +1,120 @@
+package com.spring.operation;
+
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.security.Key;
+import java.text.SimpleDateFormat;
+import java.util.*;
+public class ArrayTest extends KeyAdapter {
+    //定义闹钟存储数组
+    static List<String> setTimeArray = new ArrayList<>();
+    public static void main(String[] args){
+        //定义格式化输出时间
+        SimpleDateFormat showDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat checkDate = new SimpleDateFormat("HH:mm:ss");
+        Date date = new Date();
+        Scanner in = new Scanner(System.in);
+        boolean isOut = false;
+        while(true){
+            System.out.printf("\b\b\b\b\b\b\b\b\b\b");
+            System.out.printf(showDate.format(date));
+            System.out.printf("请输入");
+            //判断闹钟是否到时间
+            if(setTimeArray.size()!=0){
+                if(checkDate.equals(setTimeArray.get(0))){
+                    System.out.printf("闹钟响了");
+                    deleteTime(0);
+                }
+            }
+            if(in.hasNext()){
+                switch(in.nextInt()){
+                    case 0: System.out.printf("秒表");miaobiao();break;
+                    case 1: System.out.printf("计时器");dingshiqi();break;
+                    case 2: System.out.printf("闹钟");naozhong();break;
+                    case 3: isOut = true;break;
+                }
+                if(isOut)
+                    break;
+            }
+        }
+    }
+    //秒表
+    public static void miaobiao(){
+        Scanner in = new Scanner(System.in);
+        Timer timer = new Timer();
+        System.out.printf("s开始，p停止");
+        boolean isOut=false;
+        while(true){
+            if(in.hasNext()){
+                switch(in.next().toString()){
+                    //计时函数
+                    case "s":timer.schedule(new TimeClock(),0,10);break;
+                    case "p":timer.cancel();isOut=true;break;
+                }
+                if(isOut)
+                    break;
+                //System.out.printf(in.next().toString());
+            }
+        }
+    }
+    //计时器
+    public static void dingshiqi(){
+        Scanner in = new Scanner(System.in);
+        System.out.printf("输入定时");
+        Integer setTime = in.nextInt();
+        while(true){
+            if(setTime<0)
+                break;
+            setTime--;
+            System.out.printf("\b\b");
+            System.out.print(setTime);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    //闹钟
+    public static void naozhong(){
+        Scanner in = new Scanner(System.in);
+        switch (in.nextInt()){
+            case 1:Integer hour = in.nextInt();
+                Integer min = in.nextInt();
+                Integer sec = in.nextInt();
+                setTime(hour,min,sec);
+                System.out.printf("设置成功");break;
+            case 2:deleteTime(in.nextInt());
+                System.out.printf("删除成功");break;
+            case 3:for(String list:setTimeArray){
+                System.out.printf(list+"\n");
+            }
+                System.out.printf("输出成功");break;
+        }
+    }
+    //设置闹钟时间并按时间排序
+    public static void setTime(int hour,int min,int sec){
+        setTimeArray.add(hour+":"+min+":"+sec);
+        Collections.sort(setTimeArray);
+    }
+    //删除指定闹钟
+    public static void deleteTime(int index){
+        setTimeArray.remove(index);
+    }
+}
+//异步定时器类
+class TimeClock extends TimerTask{
+    static double getTime=0;
+    @Override
+    public boolean cancel() {
+        getTime = 0;
+        return super.cancel();
+    }
+    @Override
+    public void run() {
+        getTime += 0.01;
+        System.out.printf("\b\b\b\b\b");
+        System.out.print(String.format("%.2f",getTime));
+    }
+}
